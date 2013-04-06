@@ -1,7 +1,7 @@
 import weka.core.Instance;
 import weka.core.Instances;
 
-
+//
 public class SplitModel {
 	int attIndex;
 	int minObj;
