@@ -9,6 +9,7 @@ public class SplitModel {
 	double splitPoint;
 	double gainRatio;
 	double infoGain;
+	int[] splitedDistribution;
 	
 	public SplitModel(int attIndex, int minObj) {
 		this.attIndex = attIndex;
@@ -23,20 +24,31 @@ public class SplitModel {
 			numSplits = 2;
 			getNumSplitResult(data);
 		}
+
 	}
 	
 	public void getNomSplitResult(Instances data) {
-		int[] splitedDistribution = new int[data.attribute(attIndex).numValues()];
+		splitedDistribution = new int[data.attribute(attIndex).numValues()];
 		
 		for (int i = 0; i < data.numInstances(); i++) {
 			Instance instance = data.instance(i);
 			splitedDistribution[(int) instance.value(attIndex)]++;
 		}
 		
-		
+		// Do we need to check whether the split is valid?
+		calculateInfoGain();
+		calculateGainRatio();
 	}
 	
 	public void getNumSplitResult(Instances data) {
+		
+	}
+	
+	private void calculateInfoGain() {
+		
+	}
+	
+	private void calculateGainRatio() {
 		
 	}
 	
