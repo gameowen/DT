@@ -2,7 +2,7 @@ import weka.core.Instances;
 import weka.core.converters.ConverterUtils.DataSource;
 
 
-public class Test {
+public class test {
 	
 	public static void main(String[] args) {		
 		DataSource source = null;
