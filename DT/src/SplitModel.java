@@ -1,9 +1,14 @@
+<<<<<<< HEAD
 import java.util.Arrays;
+=======
+import java.util.Enumeration;
+>>>>>>> 3540ce4b2e37a7173f66b64b93cff491b42f30d4
 
 import weka.core.Instance;
 import weka.core.Instances;
+import weka.core.Utils;
 
-
+//
 public class SplitModel {
 	int attIndex;
 	int minObj;
@@ -11,7 +16,10 @@ public class SplitModel {
 	double splitPoint;
 	double gainRatio;
 	double infoGain;
+<<<<<<< HEAD
 	double[] splitedDistribution;
+=======
+>>>>>>> 3540ce4b2e37a7173f66b64b93cff491b42f30d4
 	
 	public SplitModel(int attIndex, int minObj) {
 		this.attIndex = attIndex;
@@ -26,17 +34,22 @@ public class SplitModel {
 			numSplits = 2;
 			getNumSplitResult(data);
 		}
-
 	}
 	
+<<<<<<< HEAD
 	public void getNomSplitResult(Instances data, double[] distribution) {
 		splitedDistribution = new double[data.attribute(attIndex).numValues()];
+=======
+	public void getNomSplitResult(Instances data) {
+		int[] splitedDistribution = new int[data.attribute(attIndex).numValues()];
+>>>>>>> 3540ce4b2e37a7173f66b64b93cff491b42f30d4
 		
 		for (int i = 0; i < data.numInstances(); i++) {
 			Instance instance = data.instance(i);
 			splitedDistribution[(int) instance.value(attIndex)] += 1;
 		}
 		
+<<<<<<< HEAD
 		System.out.println(Arrays.toString(splitedDistribution));
 		
 		// Do we need to check whether the split is valid? Whether minObj in split model?
@@ -76,6 +89,12 @@ public class SplitModel {
 	}
 	
 	private void calculateGainRatio(Instances data, double[] classDist) {
+=======
+		
+	}
+	
+	public void getNumSplitResult(Instances data) {
+>>>>>>> 3540ce4b2e37a7173f66b64b93cff491b42f30d4
 		
 	}
 	
@@ -113,4 +132,21 @@ public class SplitModel {
 	
 		return 0;		
 	}
+	private double computeEntropy(Instances data) throws Exception {
+
+	    double [] classCounts = new double[data.numClasses()];
+	    Enumeration instEnum = data.enumerateInstances();
+	    while (instEnum.hasMoreElements()) {
+	      Instance inst = (Instance) instEnum.nextElement();
+	      classCounts[(int) inst.classValue()]++;
+	    }
+	    double entropy = 0;
+	    for (int j = 0; j < data.numClasses(); j++) {
+	      if (classCounts[j] > 0) {
+	        entropy -= classCounts[j] * Utils.log2(classCounts[j]);
+	      }
+	    }
+	    entropy /= (double) data.numInstances();
+	    return entropy + Utils.log2(data.numInstances());
+	  }
 }

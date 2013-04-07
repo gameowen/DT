@@ -4,7 +4,6 @@ import java.util.Enumeration;
 import weka.core.Instance;
 import weka.core.Instances;
 
-
 public class TreeNode {
 	boolean isLeaf = false;
 	TreeNode[] children;
@@ -12,47 +11,51 @@ public class TreeNode {
 	int minObj;
 	double[] distribution;
 	int leafClassIndex;
-	
+
 	public TreeNode(int minObj) {
 		this.minObj = minObj;
 	}
-	
+
 	public void buildTree(Instances data) {
 		storeDistribution(data);
 		System.out.println(Arrays.toString(distribution));
-		
+
 		if (data.size() < 2 * minObj || sameClass(data.numInstances())) {
-			this.isLeaf = true;		
-			leafClassIndex = getMajClass();			
+			this.isLeaf = true;
+			leafClassIndex = getMajClass();
 			return;
-		} 
-		
-		
+		}
+
 		getBestModel(data);
+<<<<<<< HEAD
 		//System.out.println(model);
+=======
+
+>>>>>>> 3540ce4b2e37a7173f66b64b93cff491b42f30d4
 		Instances[] splitedInstances = model.split(data);
-		
+
 		children = new TreeNode[splitedInstances.length];
 		for (int i = 0; i < children.length; i++) {
 			children[i] = new TreeNode(this.minObj);
 			children[i].buildTree(splitedInstances[i]);
 		}
 	}
-	
+
 	public int classifyInstance(Instance i) {
 		return 0;
 	}
-	
+
 	private int getMajClass() {
 		int max = 0;
-		
+
 		for (int i = 0; i < distribution.length; i++) {
-			if (distribution[i] > distribution[max]) max = i;
+			if (distribution[i] > distribution[max])
+				max = i;
 		}
-		
+
 		return max;
 	}
-	
+
 	private void getBestModel(Instances data) {
 		//double bestGainRatio = 0; use info gain first for tesing
 		double bestInfoGain = Double.MIN_VALUE;
@@ -82,29 +85,36 @@ public class TreeNode {
 				}
 			}
 		}
-		
+
 		this.model = bestModel;
 		System.out.println(data.attribute(model.attIndex));
 	}
-	
+
 	private boolean sameClass(int totalNumInstances) {
 		for (int i = 0; i < distribution.length; i++) {
-			if (distribution[i] == totalNumInstances) return true;
+			if (distribution[i] == totalNumInstances)
+				return true;
 		}
-		
+
 		return false;
 	}
-	
+
 	private void storeDistribution(Instances data) {
+<<<<<<< HEAD
 		this.distribution = new double[data.classAttribute().numValues()];
 		System.out.println("number of class: " + data.classAttribute().numValues());
 		
+=======
+		this.distribution = new int[data.classAttribute().numValues()];
+		// System.out.println(data.classAttribute().numValues());
+
+>>>>>>> 3540ce4b2e37a7173f66b64b93cff491b42f30d4
 		@SuppressWarnings("unchecked")
 		Enumeration<Instance> instances = data.enumerateInstances();
-		
+
 		while (instances.hasMoreElements()) {
 			Instance i = (Instance) instances.nextElement();
-			distribution[(int)i.classValue()]++;
+			distribution[(int) i.classValue()]++;
 		}
 	}
 }
