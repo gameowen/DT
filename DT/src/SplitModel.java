@@ -1,3 +1,5 @@
+import java.util.Arrays;
+
 import weka.core.Instance;
 import weka.core.Instances;
 
@@ -9,17 +11,17 @@ public class SplitModel {
 	double splitPoint;
 	double gainRatio;
 	double infoGain;
-	int[] splitedDistribution;
+	double[] splitedDistribution;
 	
 	public SplitModel(int attIndex, int minObj) {
 		this.attIndex = attIndex;
 		this.minObj = minObj;
 	}
 	
-	public void buildSplitModel(Instances data) {
+	public void buildSplitModel(Instances data, double[] distribution) {
 		if (data.attribute(attIndex).isNominal()) {
 			numSplits = data.attribute(attIndex).numValues();
-			getNomSplitResult(data);
+			getNomSplitResult(data, distribution);
 		} else {
 			numSplits = 2;
 			getNumSplitResult(data);
@@ -27,28 +29,53 @@ public class SplitModel {
 
 	}
 	
-	public void getNomSplitResult(Instances data) {
-		splitedDistribution = new int[data.attribute(attIndex).numValues()];
+	public void getNomSplitResult(Instances data, double[] distribution) {
+		splitedDistribution = new double[data.attribute(attIndex).numValues()];
 		
 		for (int i = 0; i < data.numInstances(); i++) {
 			Instance instance = data.instance(i);
-			splitedDistribution[(int) instance.value(attIndex)]++;
+			splitedDistribution[(int) instance.value(attIndex)] += 1;
 		}
 		
-		// Do we need to check whether the split is valid?
-		calculateInfoGain();
-		calculateGainRatio();
+		System.out.println(Arrays.toString(splitedDistribution));
+		
+		// Do we need to check whether the split is valid? Whether minObj in split model?
+		calculateInfoGain(data, distribution);
+		calculateGainRatio(data, distribution);
 	}
 	
 	public void getNumSplitResult(Instances data) {
 		
 	}
 	
-	private void calculateInfoGain() {
+	private void calculateInfoGain(Instances data, double[] classDist) {
+		double oldEntropy = getEntropy(classDist, data.numInstances());
+		double newEntropy = getEntropy(splitedDistribution, data.numInstances());
 		
+		System.out.println("oldEntropy: " + oldEntropy);
+		System.out.println("newEntropy: " + newEntropy);
+		
+		this.infoGain = newEntropy - oldEntropy;
 	}
 	
-	private void calculateGainRatio() {
+	private double getEntropy(double[] classDist, double numOfInstances) {
+		// double question again
+		double r = 0;
+		System.out.println("	num of class:" + classDist.length);
+		for (int i = 0; i < classDist.length; i++) {
+			System.out.println("	percent: " + (classDist[i] / numOfInstances));
+			//System.out.println("	log percent: " + (Math.log((classDist[i] / numOfInstances))));
+			if (classDist[i] != 0) {
+				r -= (Math.log((classDist[i] / numOfInstances)) / Math.log(2)) * (classDist[i] / numOfInstances);
+				System.out.println("r: " + r);
+			}			
+		}
+		
+		
+		return r;
+	}
+	
+	private void calculateGainRatio(Instances data, double[] classDist) {
 		
 	}
 	
@@ -61,8 +88,29 @@ public class SplitModel {
 	}
 	
 	public Instances[] split(Instances data) {
-		Instances[] instances = new Instances[numSplits];
+		Instances[] splitedInstances = new Instances[numSplits];
 		
-		return instances;
+		for (int i = 0; i < numSplits; i++) {
+			splitedInstances[i] = new Instances(data, data.numInstances());
+		}
+		
+		for (int i = 0; i < data.numInstances(); i++) {
+			Instance in = data.instance(i);
+			splitedInstances[classify(in)].add(in);
+		}
+		
+		return splitedInstances;
+	}
+	
+	public int classify(Instance in) {
+		if (in.attribute(attIndex).isNominal()) {
+			return (int) in.value(attIndex);
+		} else if (in.attribute(attIndex).isNumeric()) {
+			if (in.value(attIndex) < splitPoint) return 0;
+			return 1;
+		}
+	
+	
+		return 0;		
 	}
 }

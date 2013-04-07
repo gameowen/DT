@@ -10,7 +10,7 @@ public class TreeNode {
 	TreeNode[] children;
 	SplitModel model;
 	int minObj;
-	int[] distribution;
+	double[] distribution;
 	int leafClassIndex;
 	
 	public TreeNode(int minObj) {
@@ -29,7 +29,7 @@ public class TreeNode {
 		
 		
 		getBestModel(data);
-		
+		//System.out.println(model);
 		Instances[] splitedInstances = model.split(data);
 		
 		children = new TreeNode[splitedInstances.length];
@@ -54,22 +54,37 @@ public class TreeNode {
 	}
 	
 	private void getBestModel(Instances data) {
-		double bestGainRatio = 0;
+		//double bestGainRatio = 0; use info gain first for tesing
+		double bestInfoGain = Double.MIN_VALUE;
 		SplitModel bestModel = null;
 		SplitModel[] models = new SplitModel[data.numAttributes()];
 		// double comparison
+//		for (int i = 0; i < data.numAttributes(); i++) {
+//			if (i != data.classIndex()) {
+//				models[i] = new SplitModel(i, minObj);
+//				models[i].buildSplitModel(data, this.distribution);
+//				if (models[i].getGainRatio() > bestGainRatio) {
+//					bestGainRatio = models[i].getGainRatio();
+//					bestModel = models[i];
+//				}
+//			}
+//		}
+		
 		for (int i = 0; i < data.numAttributes(); i++) {
 			if (i != data.classIndex()) {
 				models[i] = new SplitModel(i, minObj);
-				models[i].buildSplitModel(data);
-				if (models[i].getGainRatio() > bestGainRatio) {
-					bestGainRatio = models[i].getGainRatio();
+				models[i].buildSplitModel(data, this.distribution);
+				double infoG = models[i].getInfoGain();
+				System.out.println("infoG: " + infoG);
+				if (models[i].getInfoGain() > bestInfoGain) {
+					bestInfoGain = models[i].getInfoGain();
 					bestModel = models[i];
 				}
 			}
 		}
 		
 		this.model = bestModel;
+		System.out.println(data.attribute(model.attIndex));
 	}
 	
 	private boolean sameClass(int totalNumInstances) {
@@ -81,8 +96,8 @@ public class TreeNode {
 	}
 	
 	private void storeDistribution(Instances data) {
-		this.distribution = new int[data.classAttribute().numValues()];
-		//System.out.println(data.classAttribute().numValues());
+		this.distribution = new double[data.classAttribute().numValues()];
+		System.out.println("number of class: " + data.classAttribute().numValues());
 		
 		@SuppressWarnings("unchecked")
 		Enumeration<Instance> instances = data.enumerateInstances();
