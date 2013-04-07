@@ -1,8 +1,7 @@
-<<<<<<< HEAD
+package decisionTree;
+
 import java.util.Arrays;
-=======
 import java.util.Enumeration;
->>>>>>> 3540ce4b2e37a7173f66b64b93cff491b42f30d4
 
 import weka.core.Instance;
 import weka.core.Instances;
@@ -16,10 +15,8 @@ public class SplitModel {
 	double splitPoint;
 	double gainRatio;
 	double infoGain;
-<<<<<<< HEAD
 	double[] splitedDistribution;
-=======
->>>>>>> 3540ce4b2e37a7173f66b64b93cff491b42f30d4
+
 	
 	public SplitModel(int attIndex, int minObj) {
 		this.attIndex = attIndex;
@@ -32,24 +29,19 @@ public class SplitModel {
 			getNomSplitResult(data, distribution);
 		} else {
 			numSplits = 2;
-			getNumSplitResult(data);
+			getNumSplitResult(data, distribution);
 		}
 	}
 	
-<<<<<<< HEAD
+
 	public void getNomSplitResult(Instances data, double[] distribution) {
 		splitedDistribution = new double[data.attribute(attIndex).numValues()];
-=======
-	public void getNomSplitResult(Instances data) {
-		int[] splitedDistribution = new int[data.attribute(attIndex).numValues()];
->>>>>>> 3540ce4b2e37a7173f66b64b93cff491b42f30d4
 		
 		for (int i = 0; i < data.numInstances(); i++) {
 			Instance instance = data.instance(i);
 			splitedDistribution[(int) instance.value(attIndex)] += 1;
 		}
-		
-<<<<<<< HEAD
+
 		System.out.println(Arrays.toString(splitedDistribution));
 		
 		// Do we need to check whether the split is valid? Whether minObj in split model?
@@ -57,7 +49,7 @@ public class SplitModel {
 		calculateGainRatio(data, distribution);
 	}
 	
-	public void getNumSplitResult(Instances data) {
+	public void getNumSplitResult(Instances data, double[] distribution) {
 		
 	}
 	
@@ -89,14 +81,11 @@ public class SplitModel {
 	}
 	
 	private void calculateGainRatio(Instances data, double[] classDist) {
-=======
+
 		
 	}
 	
-	public void getNumSplitResult(Instances data) {
->>>>>>> 3540ce4b2e37a7173f66b64b93cff491b42f30d4
-		
-	}
+
 	
 	public double getGainRatio() {
 		return this.gainRatio;

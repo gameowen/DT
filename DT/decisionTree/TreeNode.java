@@ -1,3 +1,4 @@
+package decisionTree;
 import java.util.Arrays;
 import java.util.Enumeration;
 
@@ -27,11 +28,9 @@ public class TreeNode {
 		}
 
 		getBestModel(data);
-<<<<<<< HEAD
 		//System.out.println(model);
-=======
 
->>>>>>> 3540ce4b2e37a7173f66b64b93cff491b42f30d4
+
 		Instances[] splitedInstances = model.split(data);
 
 		children = new TreeNode[splitedInstances.length];
@@ -100,15 +99,11 @@ public class TreeNode {
 	}
 
 	private void storeDistribution(Instances data) {
-<<<<<<< HEAD
+
 		this.distribution = new double[data.classAttribute().numValues()];
 		System.out.println("number of class: " + data.classAttribute().numValues());
-		
-=======
-		this.distribution = new int[data.classAttribute().numValues()];
-		// System.out.println(data.classAttribute().numValues());
 
->>>>>>> 3540ce4b2e37a7173f66b64b93cff491b42f30d4
+
 		@SuppressWarnings("unchecked")
 		Enumeration<Instance> instances = data.enumerateInstances();
 
