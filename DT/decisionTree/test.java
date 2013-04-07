@@ -18,5 +18,6 @@ public class test {
 		
 		DecisionTree dt = new DecisionTree(0);
 		dt.buildClassfier(data);
+		dt.printTree(data);
 	}
 }

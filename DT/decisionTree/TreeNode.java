@@ -1,5 +1,4 @@
 package decisionTree;
-import java.util.Arrays;
 import java.util.Enumeration;
 
 import weka.core.Instance;
@@ -19,7 +18,7 @@ public class TreeNode {
 
 	public void buildTree(Instances data) {
 		storeDistribution(data);
-		System.out.println(Arrays.toString(distribution));
+		//System.out.println(Arrays.toString(distribution));
 
 		if (data.size() < 2 * minObj || sameClass(data.numInstances())) {
 			this.isLeaf = true;
@@ -77,7 +76,7 @@ public class TreeNode {
 				models[i] = new SplitModel(i, minObj);
 				models[i].buildSplitModel(data, this.distribution);
 				double infoG = models[i].getInfoGain();
-				System.out.println("infoG: " + infoG);
+				//System.out.println("infoG: " + infoG);
 				if (models[i].getInfoGain() > bestInfoGain) {
 					bestInfoGain = models[i].getInfoGain();
 					bestModel = models[i];
@@ -86,7 +85,7 @@ public class TreeNode {
 		}
 
 		this.model = bestModel;
-		System.out.println(data.attribute(model.attIndex));
+		//System.out.println(data.attribute(model.attIndex));
 	}
 
 	private boolean sameClass(int totalNumInstances) {
@@ -101,7 +100,7 @@ public class TreeNode {
 	private void storeDistribution(Instances data) {
 
 		this.distribution = new double[data.classAttribute().numValues()];
-		System.out.println("number of class: " + data.classAttribute().numValues());
+		//System.out.println("number of class: " + data.classAttribute().numValues());
 
 
 		@SuppressWarnings("unchecked")

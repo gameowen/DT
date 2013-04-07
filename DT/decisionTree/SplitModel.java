@@ -1,6 +1,5 @@
 package decisionTree;
 
-import java.util.Arrays;
 import java.util.Enumeration;
 
 import weka.core.Instance;
@@ -42,7 +41,7 @@ public class SplitModel {
 			splitedDistribution[(int) instance.value(attIndex)] += 1;
 		}
 
-		System.out.println(Arrays.toString(splitedDistribution));
+		//System.out.println(Arrays.toString(splitedDistribution));
 		
 		// Do we need to check whether the split is valid? Whether minObj in split model?
 		calculateInfoGain(data, distribution);
@@ -54,38 +53,65 @@ public class SplitModel {
 	}
 	
 	private void calculateInfoGain(Instances data, double[] classDist) {
-		double oldEntropy = getEntropy(classDist, data.numInstances());
-		double newEntropy = getEntropy(splitedDistribution, data.numInstances());
+		double oldEntropy = getOldEntropy(classDist, data.numInstances());
+		double newEntropy = getNewEntropy(data, splitedDistribution, data.numInstances());
 		
-		System.out.println("oldEntropy: " + oldEntropy);
-		System.out.println("newEntropy: " + newEntropy);
+//		System.out.println("oldEntropy: " + oldEntropy);
+//		System.out.println("newEntropy: " + newEntropy);
 		
-		this.infoGain = newEntropy - oldEntropy;
+		this.infoGain = oldEntropy - newEntropy;
 	}
 	
-	private double getEntropy(double[] classDist, double numOfInstances) {
+	private double getNewEntropy(Instances data, double[] splitedDistribution, double numOfInstances) {
+		double r = 0;
+		double numClass = data.classAttribute().numValues();
+		
+		double[][] distribution = new double[splitedDistribution.length][(int) numClass];
+		
+		for (int i = 0; i < data.numInstances(); i++) {
+			Instance in = data.instance(i);			
+			distribution[(int) in.value(attIndex)][(int) in.classValue()]++;
+		}
+		
+		for (int i = 0; i < splitedDistribution.length; i++) {
+			for (int j = 0; j < numClass; j++) {
+				r += getLog(distribution[i][j]);
+			}
+			
+			r -= getLog(splitedDistribution[i]);
+		}
+		
+		return -r / data.numInstances();
+	}
+	
+	private double getLog(double num) {
+		if (num == 0) return 0;
+		
+		return num * (Math.log(num) / Math.log(2));
+	}
+	
+	private double getOldEntropy(double[] classDist, double numOfInstances) {
 		// double question again
 		double r = 0;
-		System.out.println("	num of class:" + classDist.length);
+		//System.out.println("	num of class:" + classDist.length);
 		for (int i = 0; i < classDist.length; i++) {
-			System.out.println("	percent: " + (classDist[i] / numOfInstances));
+			//System.out.println("	percent: " + (classDist[i] / numOfInstances));
 			//System.out.println("	log percent: " + (Math.log((classDist[i] / numOfInstances))));
 			if (classDist[i] != 0) {
-				r -= (Math.log((classDist[i] / numOfInstances)) / Math.log(2)) * (classDist[i] / numOfInstances);
-				System.out.println("r: " + r);
+				r += getLog(classDist[i]);
+				//System.out.println("r: " + r);
 			}			
 		}
 		
+		r -= getLog(numOfInstances);
 		
-		return r;
+		return -r;
 	}
 	
 	private void calculateGainRatio(Instances data, double[] classDist) {
 
 		
 	}
-	
-
 	
 	public double getGainRatio() {
 		return this.gainRatio;
