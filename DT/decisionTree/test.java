@@ -8,7 +8,7 @@ public class test {
 		DataSource source = null;
 		Instances data = null;
 		try {
-			source = new DataSource("whether.arff");
+			source = new DataSource("tic-tac-toe.data.arff");
 			data = source.getDataSet();
 			if (data.classIndex() == -1)
 				data.setClassIndex(data.numAttributes() - 1);

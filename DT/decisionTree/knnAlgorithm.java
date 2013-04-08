@@ -1,3 +1,5 @@
+package decisionTree;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -27,10 +29,10 @@ public class knnAlgorithm {
 		try {
 			BufferedReader trainReader = new BufferedReader(
 					new FileReader(
-							"C:/Users/vivek/Downloads/task11a_2013(3)/task11a_2013/attachments/trainProdSelection/trainProdSelection.arff"));
+							"trainProdSelection.arff"));
 			BufferedReader testReader = new BufferedReader(
 					new FileReader(
-							"C:/Users/vivek/Downloads/task11a_2013(3)/task11a_2013/attachments/testProdSelection/testProdSelection.arff"));
+							"testProdSelection.arff"));
 
 			ArffReader arffTrain = new ArffReader(trainReader);
 			Instances data = arffTrain.getData();

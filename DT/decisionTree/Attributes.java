@@ -1,3 +1,4 @@
+package decisionTree;
 
 public class Attributes implements Comparable{
   private String type;
