@@ -49,12 +49,31 @@ public class SplitModel {
 	}
 	
 	public void getNumSplitResult(Instances data, double[] distribution) {
+		double min = Double.MAX_VALUE;
+		double max = Double.MIN_NORMAL;
+		
+		for (int i = 0; i < data.size(); i++) {		
+			double n = data.instance(i).value(attIndex);
+			if (n < min) min = n;
+			if (n > max) max = n;
+		}
+		
+		double range = max - min;
+		
+		NumSplitTest[] tests = new NumSplitTest[3];
+		
+		for (int i = 0; i < 3; i++) {
+			tests[i] = new NumSplitTest(attIndex, minObj);
+			tests[i].buildSplit(data, range * (0.25 + i * 0.25));
+		}
+		
+		
 		
 	}
 	
 	private void calculateInfoGain(Instances data, double[] classDist) {
 		double oldEntropy = getOldEntropy(classDist, data.numInstances());
-		double newEntropy = getNewEntropy(data, splitedDistribution, data.numInstances());
+		double newEntropy = getNewEntropy(data, splitedDistribution);
 		
 //		System.out.println("oldEntropy: " + oldEntropy);
 //		System.out.println("newEntropy: " + newEntropy);
@@ -62,10 +81,10 @@ public class SplitModel {
 		this.infoGain = oldEntropy - newEntropy;
 	}
 	
-	private double getNewEntropy(Instances data, double[] splitedDistribution, double numOfInstances) {
+	private double getNewEntropy(Instances data, double[] splitedDistribution) {
 		double r = 0;
 		double numClass = data.classAttribute().numValues();
-		
+
 		double[][] distribution = new double[splitedDistribution.length][(int) numClass];
 		
 		for (int i = 0; i < data.numInstances(); i++) {
@@ -109,7 +128,7 @@ public class SplitModel {
 	}
 	
 	private void calculateGainRatio(Instances data, double[] classDist) {
-
+		
 		
 	}
 	
