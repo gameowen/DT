@@ -8,16 +8,17 @@ public class test {
 		DataSource source = null;
 		Instances data = null;
 		try {
-			source = new DataSource("tic-tac-toe.data.arff");
+			source = new DataSource("trainProdSelection.arff");
 			data = source.getDataSet();
-			if (data.classIndex() == -1)
-				data.setClassIndex(data.numAttributes() - 1);
+			if (data.classIndex() == -1) data.setClassIndex(data.numAttributes() - 1);
+			
+			DecisionTree dt = new DecisionTree(2);
+			dt.buildClassifier(data);
+			dt.printTree(data);
+			CrossValidation cv = new CrossValidation(data, 5);
+			System.out.println("Final: " + cv.doCrossValidation(data, dt));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-		DecisionTree dt = new DecisionTree(0);
-		dt.buildClassfier(data);
-		dt.printTree(data);
 	}
 }

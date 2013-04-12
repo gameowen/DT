@@ -1,3 +1,5 @@
+package numeric;
+
 import java.util.Enumeration;
 
 import weka.classifiers.trees.j48.Distribution;

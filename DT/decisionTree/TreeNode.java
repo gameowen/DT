@@ -20,16 +20,16 @@ public class TreeNode {
 		storeDistribution(data);
 		//System.out.println(Arrays.toString(distribution));
 
-		if (data.size() < 2 * minObj || sameClass(data.numInstances())) {
+		if (data.size() <= 2 * minObj || sameClass(data.numInstances())) {
 			this.isLeaf = true;
 			leafClassIndex = getMajClass();
 			return;
 		}
 
-		getBestModel(data);
 		//System.out.println(model);
 
-
+		if (!getBestModel(data)) return;
+		
 		Instances[] splitedInstances = model.split(data);
 
 		children = new TreeNode[splitedInstances.length];
@@ -40,7 +40,9 @@ public class TreeNode {
 	}
 
 	public int classifyInstance(Instance i) {
-		return 0;
+		if (this.isLeaf) return this.leafClassIndex;
+		TreeNode child = children[this.model.classify(i)];
+		return child.classifyInstance(i);
 	}
 
 	private int getMajClass() {
@@ -54,7 +56,7 @@ public class TreeNode {
 		return max;
 	}
 
-	private void getBestModel(Instances data) {
+	private boolean getBestModel(Instances data) {
 		//double bestGainRatio = 0; use info gain first for tesing
 		double bestInfoGain = Double.MIN_VALUE;
 		SplitModel bestModel = null;
@@ -76,15 +78,23 @@ public class TreeNode {
 				models[i] = new SplitModel(i, minObj);
 				models[i].buildSplitModel(data, this.distribution);
 				double infoG = models[i].getInfoGain();
-				//System.out.println("infoG: " + infoG);
-				if (models[i].getInfoGain() > bestInfoGain) {
+//				System.out.println(data.attribute(i).name() + " infoG: " + infoG);
+//				System.out.println("-------------------------------------------");
+				if (models[i].isValid() && models[i].getInfoGain() > bestInfoGain) {
 					bestInfoGain = models[i].getInfoGain();
 					bestModel = models[i];
 				}
 			}
 		}
+		
+		if (bestModel == null) {
+			this.isLeaf = true;
+			leafClassIndex = getMajClass();
+			return false;
+		}
 
 		this.model = bestModel;
+		return true;
 		//System.out.println(data.attribute(model.attIndex));
 	}
 

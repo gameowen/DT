@@ -15,6 +15,7 @@ public class SplitModel {
 	double gainRatio;
 	double infoGain;
 	double[] splitedDistribution;
+	boolean valid = true;
 
 	
 	public SplitModel(int attIndex, int minObj) {
@@ -45,7 +46,24 @@ public class SplitModel {
 		
 		// Do we need to check whether the split is valid? Whether minObj in split model?
 		calculateInfoGain(data, distribution);
-		calculateGainRatio(data, distribution);
+		checkValid();
+		//calculateGainRatio(data, distribution);
+	}
+	
+	private void checkValid() {
+		int count = 0;
+		for (int i = 0; i < this.splitedDistribution.length; i++) {
+			if (splitedDistribution[i] < minObj) count++; 
+			if (count >= 2) {
+				valid = false;
+				return;
+			}
+		}
+		valid = true;
+	}
+	
+	public boolean isValid() {
+		return valid;
 	}
 	
 	public void getNumSplitResult(Instances data, double[] distribution) {
@@ -60,20 +78,40 @@ public class SplitModel {
 		
 		double range = max - min;
 		
-		NumSplitTest[] tests = new NumSplitTest[3];
+		double k = 10;
+		NumSplitTest[] tests = new NumSplitTest[(int) k];
 		
-		for (int i = 0; i < 3; i++) {
-			tests[i] = new NumSplitTest(attIndex, minObj);
-			tests[i].buildSplit(data, range * (0.25 + i * 0.25));
+		double oldEntropy = getOldEntropy(distribution, data.numInstances());
+//		System.out.println("Old entropy: " + oldEntropy);
+		for (int i = 0; i < (int) k; i++) {
+			tests[i] = new NumSplitTest(attIndex, minObj, oldEntropy);
+			tests[i].buildSplit(data, min + range * (1/k + i * 1/k), distribution);
+		}		
+		
+		int maxIndex = 0;
+		
+//		System.out.println("Attribute: " + data.attribute(attIndex).name());
+		for (int i = 0; i < (int) k; i++) {
+			double infoG = tests[i].getInfoGain();
+//			System.out.println("Test: " + infoG);
+//			System.out.println("SplitPoint: " + tests[i].splitPoint);
+			if (tests[i].getInfoGain() > tests[maxIndex].getInfoGain()) {
+				maxIndex = i;
+			}
 		}
 		
+		NumSplitTest test = tests[maxIndex];
 		
+		this.infoGain = test.getInfoGain();
+		this.splitPoint = test.splitPoint;
+		
+		this.splitedDistribution = new double[2];
 		
 	}
 	
-	private void calculateInfoGain(Instances data, double[] classDist) {
+	public void calculateInfoGain(Instances data, double[] classDist) {
 		double oldEntropy = getOldEntropy(classDist, data.numInstances());
-		double newEntropy = getNewEntropy(data, splitedDistribution);
+		double newEntropy = getNewEntropy(data);
 		
 //		System.out.println("oldEntropy: " + oldEntropy);
 //		System.out.println("newEntropy: " + newEntropy);
@@ -81,7 +119,7 @@ public class SplitModel {
 		this.infoGain = oldEntropy - newEntropy;
 	}
 	
-	private double getNewEntropy(Instances data, double[] splitedDistribution) {
+	public double getNewEntropy(Instances data) {
 		double r = 0;
 		double numClass = data.classAttribute().numValues();
 
@@ -102,8 +140,8 @@ public class SplitModel {
 		
 		return -r / data.numInstances();
 	}
-	
-	private double getLog(double num) {
+	 
+	public double getLog(double num) {
 		if (num == 0) return 0;
 		
 		return num * (Math.log(num) / Math.log(2));

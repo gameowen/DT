@@ -16,7 +16,7 @@ public class DecisionTree {
 		this.minObj = minObj;
 	}
 	
-	public void buildClassfier(Instances data) {
+	public void buildClassifier(Instances data) {
 		if (data.numInstances() < 2 * minObj) {
 			throw new RuntimeException("Too few instances!");
 		}
@@ -38,6 +38,10 @@ public class DecisionTree {
 		_printTree(data, root, 0);
 	}
 	
+	public double classifyInstance(Instance instance) {
+		return root.classifyInstance(instance);				
+	}
+	
 	private void _printTree(Instances data, TreeNode root, int level) {
 		if (root == null) return;
 		
@@ -53,18 +57,28 @@ public class DecisionTree {
 		Attribute a = data.attribute(root.model.attIndex);
 		if (a.isNominal()) {
 			System.out.println(a.name() + " (Nominal):");
+			for (int i = 0; i < a.numValues(); i++) {
+				for (int j = 0; j < level + 1; j++) {
+					System.out.print("	");
+				}
+				System.out.println(a.value(i) + ": ");
+				_printTree(data, root.children[i], level + 2);
+			}
 		} else if (a.isNumeric()) {
 			System.out.println(a.name() + " (Numeric):");
-		}
-		
-
-		for (int i = 0; i < a.numValues(); i++) {
 			for (int j = 0; j < level + 1; j++) {
 				System.out.print("	");
 			}
-			System.out.println(a.value(i) + ": ");
-			_printTree(data, root.children[i], level + 2);
+			System.out.println("<" + root.model.splitPoint + ": ");
+			_printTree(data, root.children[0], level + 2);
+			for (int j = 0; j < level + 1; j++) {
+				System.out.print("	");
+			}
+			System.out.println(">" + root.model.splitPoint + ": ");
+			_printTree(data, root.children[1], level + 2);			
 		}
+		
+
 	}
 }
 
