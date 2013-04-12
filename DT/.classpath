@@ -2,6 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path=""/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="/afs/andrew.cmu.edu/usr12/yingli1/Downloads/weka.jar"/>
+	<classpathentry kind="lib" path="/Users/yingli/Documents/jars/weka.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
