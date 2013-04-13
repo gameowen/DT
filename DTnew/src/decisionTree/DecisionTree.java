@@ -1,7 +1,5 @@
 package decisionTree;
 
-import java.util.Enumeration;
-
 import weka.core.Attribute;
 import weka.core.Instance;
 import weka.core.Instances;
@@ -21,13 +19,10 @@ public class DecisionTree {
 			throw new RuntimeException("Too few instances!");
 		}
 		
-		@SuppressWarnings("unchecked")
-		Enumeration<Instance> instanceEnum = data.enumerateInstances();
-		
-		while (instanceEnum.hasMoreElements()) {
-			Instance i = (Instance) instanceEnum.nextElement();
-			if (i.hasMissingValue()) throw new RuntimeException("Do not support missing values.");
-		}
+		for (int i = 0; i < data.numInstances(); i++) {
+			Instance in = data.instance(i);
+			if (in.hasMissingValue()) throw new RuntimeException("Do not support missing values.");
+		}	
 		
 		root = new TreeNode(minObj);
 		root.buildTree(data);

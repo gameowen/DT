@@ -1,59 +1,56 @@
 package decisionTree;
 
-import java.util.Enumeration;
-
 import weka.core.Instance;
 import weka.core.Instances;
-import weka.core.Utils;
 
 //
-public class SplitModel {
+public class Split {
 	int attIndex;
 	int minObj;
 	int numSplits;
 	double splitPoint;
 	double gainRatio;
 	double infoGain;
-	double[] splitedDistribution;
+	double[] splitedbranches;
 	boolean valid = true;
 
 	
-	public SplitModel(int attIndex, int minObj) {
+	public Split(int attIndex, int minObj) {
 		this.attIndex = attIndex;
 		this.minObj = minObj;
 	}
 	
-	public void buildSplitModel(Instances data, double[] distribution) {
+	public void buildSplitModel(Instances data, double[] classification) {
 		if (data.attribute(attIndex).isNominal()) {
 			numSplits = data.attribute(attIndex).numValues();
-			getNomSplitResult(data, distribution);
+			getNomSplitResult(data, classification);
 		} else {
 			numSplits = 2;
-			getNumSplitResult(data, distribution);
+			getNumSplitResult(data, classification);
 		}
 	}
 	
 
-	public void getNomSplitResult(Instances data, double[] distribution) {
-		splitedDistribution = new double[data.attribute(attIndex).numValues()];
+	public void getNomSplitResult(Instances data, double[] classification) {
+		splitedbranches = new double[data.attribute(attIndex).numValues()];
 		
 		for (int i = 0; i < data.numInstances(); i++) {
 			Instance instance = data.instance(i);
-			splitedDistribution[(int) instance.value(attIndex)] += 1;
+			splitedbranches[(int) instance.value(attIndex)] += 1;
 		}
 
 		//System.out.println(Arrays.toString(splitedDistribution));
 		
 		// Do we need to check whether the split is valid? Whether minObj in split model?
-		calculateInfoGain(data, distribution);
+		calculateInfoGain(data, classification);
 		checkValid();
 		//calculateGainRatio(data, distribution);
 	}
 	
 	private void checkValid() {
 		int count = 0;
-		for (int i = 0; i < this.splitedDistribution.length; i++) {
-			if (splitedDistribution[i] < minObj) count++; 
+		for (int i = 0; i < this.splitedbranches.length; i++) {
+			if (splitedbranches[i] < minObj) count++; 
 			if (count >= 2) {
 				valid = false;
 				return;
@@ -66,7 +63,7 @@ public class SplitModel {
 		return valid;
 	}
 	
-	public void getNumSplitResult(Instances data, double[] distribution) {
+	public void getNumSplitResult(Instances data, double[] classification) {
 		double min = Double.MAX_VALUE;
 		double max = Double.MIN_NORMAL;
 		
@@ -81,18 +78,18 @@ public class SplitModel {
 		double k = 10;
 		NumSplitTest[] tests = new NumSplitTest[(int) k];
 		
-		double oldEntropy = getOldEntropy(distribution, data.numInstances());
+		double oldEntropy = getOldEntropy(classification, data.numInstances());
 //		System.out.println("Old entropy: " + oldEntropy);
 		for (int i = 0; i < (int) k; i++) {
 			tests[i] = new NumSplitTest(attIndex, minObj, oldEntropy);
-			tests[i].buildSplit(data, min + range * (1/k + i * 1/k), distribution);
+			tests[i].buildSplit(data, min + range * (1/k + i * 1/k), classification);
 		}		
 		
 		int maxIndex = 0;
 		
 //		System.out.println("Attribute: " + data.attribute(attIndex).name());
 		for (int i = 0; i < (int) k; i++) {
-			double infoG = tests[i].getInfoGain();
+//			double infoG = tests[i].getInfoGain();
 //			System.out.println("Test: " + infoG);
 //			System.out.println("SplitPoint: " + tests[i].splitPoint);
 			if (tests[i].getInfoGain() > tests[maxIndex].getInfoGain()) {
@@ -105,7 +102,7 @@ public class SplitModel {
 		this.infoGain = test.getInfoGain();
 		this.splitPoint = test.splitPoint;
 		
-		this.splitedDistribution = new double[2];
+		this.splitedbranches = new double[2];
 		
 	}
 	
@@ -123,19 +120,19 @@ public class SplitModel {
 		double r = 0;
 		double numClass = data.classAttribute().numValues();
 
-		double[][] distribution = new double[splitedDistribution.length][(int) numClass];
+		double[][] distribution = new double[splitedbranches.length][(int) numClass];
 		
 		for (int i = 0; i < data.numInstances(); i++) {
 			Instance in = data.instance(i);			
 			distribution[(int) in.value(attIndex)][(int) in.classValue()]++;
 		}
 		
-		for (int i = 0; i < splitedDistribution.length; i++) {
+		for (int i = 0; i < splitedbranches.length; i++) {
 			for (int j = 0; j < numClass; j++) {
 				r += getLog(distribution[i][j]);
 			}
 			
-			r -= getLog(splitedDistribution[i]);
+			r -= getLog(splitedbranches[i]);
 		}
 		
 		return -r / data.numInstances();
@@ -163,11 +160,6 @@ public class SplitModel {
 		r -= getLog(numOfInstances);
 		
 		return -r;
-	}
-	
-	private void calculateGainRatio(Instances data, double[] classDist) {
-		
-		
 	}
 	
 	public double getGainRatio() {
@@ -204,21 +196,4 @@ public class SplitModel {
 	
 		return 0;		
 	}
-	private double computeEntropy(Instances data) throws Exception {
-
-	    double [] classCounts = new double[data.numClasses()];
-	    Enumeration instEnum = data.enumerateInstances();
-	    while (instEnum.hasMoreElements()) {
-	      Instance inst = (Instance) instEnum.nextElement();
-	      classCounts[(int) inst.classValue()]++;
-	    }
-	    double entropy = 0;
-	    for (int j = 0; j < data.numClasses(); j++) {
-	      if (classCounts[j] > 0) {
-	        entropy -= classCounts[j] * Utils.log2(classCounts[j]);
-	      }
-	    }
-	    entropy /= (double) data.numInstances();
-	    return entropy + Utils.log2(data.numInstances());
-	  }
 }

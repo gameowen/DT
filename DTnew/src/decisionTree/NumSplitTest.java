@@ -4,7 +4,7 @@ import weka.core.Instance;
 import weka.core.Instances;
 
 
-public class NumSplitTest extends SplitModel {
+public class NumSplitTest extends Split {
 	double oldEntropy;
 	
 	public NumSplitTest(int attIndex, int minObj, double oldEntropy) {
@@ -12,19 +12,19 @@ public class NumSplitTest extends SplitModel {
 		this.oldEntropy = oldEntropy;
 	}
 	
-	public void buildSplit(Instances data, double splitPoint, double[] distribution) {
+	public void buildSplit(Instances data, double splitPoint, double[] classification) {
 		this.splitPoint = splitPoint;
-		splitedDistribution = new double[2];		
+		splitedbranches = new double[2];		
 		
 		for (int i = 0; i < data.numInstances(); i++) {
 			Instance in = data.instance(i);
 			if (in.value(attIndex) < splitPoint) {
-				splitedDistribution[0]++;
+				splitedbranches[0]++;
 			} else {
-				splitedDistribution[1]++;
+				splitedbranches[1]++;
 			}
 		}		
-		calculateInfoGain(data, distribution);
+		calculateInfoGain(data, classification);
 	}
 	
 	public void calculateInfoGain(Instances data, double[] distribution) {
@@ -37,7 +37,7 @@ public class NumSplitTest extends SplitModel {
 		double r = 0;
 		double numClass = data.classAttribute().numValues();
 
-		double[][] distribution = new double[splitedDistribution.length][(int) numClass];
+		double[][] distribution = new double[splitedbranches.length][(int) numClass];
 		
 		for (int i = 0; i < data.numInstances(); i++) {
 			Instance in = data.instance(i);			
@@ -49,12 +49,12 @@ public class NumSplitTest extends SplitModel {
 			}
 		}
 		
-		for (int i = 0; i < splitedDistribution.length; i++) {
+		for (int i = 0; i < splitedbranches.length; i++) {
 			for (int j = 0; j < numClass; j++) {
 				r += getLog(distribution[i][j]);
 			}
 			
-			r -= getLog(splitedDistribution[i]);
+			r -= getLog(splitedbranches[i]);
 		}
 		
 		return -r / data.numInstances();

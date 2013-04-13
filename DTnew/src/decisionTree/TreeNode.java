@@ -1,5 +1,4 @@
 package decisionTree;
-import java.util.Enumeration;
 
 import weka.core.Instance;
 import weka.core.Instances;
@@ -7,9 +6,9 @@ import weka.core.Instances;
 public class TreeNode {
 	boolean isLeaf = false;
 	TreeNode[] children;
-	SplitModel model;
+	Split model;
 	int minObj;
-	double[] distribution;
+	double[] classification;
 	int leafClassIndex;
 
 	public TreeNode(int minObj) {
@@ -48,8 +47,8 @@ public class TreeNode {
 	private int getMajClass() {
 		int max = 0;
 
-		for (int i = 0; i < distribution.length; i++) {
-			if (distribution[i] > distribution[max])
+		for (int i = 0; i < classification.length; i++) {
+			if (classification[i] > classification[max])
 				max = i;
 		}
 
@@ -59,25 +58,14 @@ public class TreeNode {
 	private boolean getBestModel(Instances data) {
 		//double bestGainRatio = 0; use info gain first for tesing
 		double bestInfoGain = Double.MIN_VALUE;
-		SplitModel bestModel = null;
-		SplitModel[] models = new SplitModel[data.numAttributes()];
-		// double comparison
-//		for (int i = 0; i < data.numAttributes(); i++) {
-//			if (i != data.classIndex()) {
-//				models[i] = new SplitModel(i, minObj);
-//				models[i].buildSplitModel(data, this.distribution);
-//				if (models[i].getGainRatio() > bestGainRatio) {
-//					bestGainRatio = models[i].getGainRatio();
-//					bestModel = models[i];
-//				}
-//			}
-//		}
+		Split bestModel = null;
+		Split[] models = new Split[data.numAttributes()];
 		
 		for (int i = 0; i < data.numAttributes(); i++) {
 			if (i != data.classIndex()) {
-				models[i] = new SplitModel(i, minObj);
-				models[i].buildSplitModel(data, this.distribution);
-				double infoG = models[i].getInfoGain();
+				models[i] = new Split(i, minObj);
+				models[i].buildSplitModel(data, this.classification);
+//				double infoG = models[i].getInfoGain();
 //				System.out.println(data.attribute(i).name() + " infoG: " + infoG);
 //				System.out.println("-------------------------------------------");
 				if (models[i].isValid() && models[i].getInfoGain() > bestInfoGain) {
@@ -99,8 +87,8 @@ public class TreeNode {
 	}
 
 	private boolean sameClass(int totalNumInstances) {
-		for (int i = 0; i < distribution.length; i++) {
-			if (distribution[i] == totalNumInstances)
+		for (int i = 0; i < classification.length; i++) {
+			if (classification[i] == totalNumInstances)
 				return true;
 		}
 
@@ -109,16 +97,12 @@ public class TreeNode {
 
 	private void storeDistribution(Instances data) {
 
-		this.distribution = new double[data.classAttribute().numValues()];
+		this.classification = new double[data.classAttribute().numValues()];
 		//System.out.println("number of class: " + data.classAttribute().numValues());
 
-
-		@SuppressWarnings("unchecked")
-		Enumeration<Instance> instances = data.enumerateInstances();
-
-		while (instances.hasMoreElements()) {
-			Instance i = (Instance) instances.nextElement();
-			distribution[(int) i.classValue()]++;
+		for (int i = 0; i < data.numInstances(); i++) {
+			Instance in = data.instance(i);
+			classification[(int) in.classValue()]++;
 		}
 	}
 }

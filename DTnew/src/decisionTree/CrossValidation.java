@@ -6,10 +6,8 @@ package decisionTree;
  */
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
-import weka.classifiers.trees.J48;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils.DataSource;
@@ -118,87 +116,11 @@ public class CrossValidation {
 		return trainingData;
 	}
 	
-//	public double weightsCrossvalidation(Instances dataSet, KnnWithWeights knn, double[] weights) {
-//		double accuracy = 0.0;
-//		double[] accuracyPerFold = new double[k];
-//		int isTheSame = 0;
-//		int testFoldSize = 0;
-//
-//		// change back to k!
-//		for(int i=0; i<k; i++){
-//			Instances testFold = bigArrayList.get(i);
-//			testFoldSize = testFold.size();
-//			
-//			// Claire changes
-//			List<Double> predictList = knn.classifyWithWeights(getTrainingData(i), testFold, weights);
-//			
-//			isTheSame = 0;
-//			for(int j=0; j<testFoldSize; j++){
-//				if(checkSame(predictList.get(j), testFold.get(j).classValue())){
-//					isTheSame++;
-//				}
-//			}
-//			accuracyPerFold[i] = (double)isTheSame/(double)testFoldSize;
-//		}
-//		// Claire changes
-//		//System.out.println(Arrays.toString(accuracyPerFold));
-//		
-//		for(int i=0; i<k; i++){
-//			accuracy += accuracyPerFold[i];
-//		}
-//		accuracy = accuracy/k;
-//		//System.out.println(accuracy);
-//		return accuracy;
-//	}
-	
-	private boolean checkSame(double predict, double actual) {
-		if (dataSet.classAttribute().isNominal()) {
-			return predict == actual;
-		} else if (dataSet.classAttribute().isNumeric()) {
-			return (predict - 19.99 > epsilon) && (actual - 19.99 > epsilon);
-		}		
-		return false;
-	}
-	
-//	public double doCrossValidation(Instances dataSet, KnnWithWeights knn){
-//		double accuracy = 0.0;
-//		double[] accuracyPerFold = new double[k];
-//		int isTheSame = 0;
-//		int testFoldSize = 0;
-//		
-//		// change back to k!
-//		for(int i=0; i<k; i++){
-//			Instances testFold = bigArrayList.get(i);
-//			testFoldSize = testFold.size();
-//			
-//			// Claire changes	
-//			List<Double> predictList = knn.classifyInstances(getTrainingData(i), testFold);
-//			//System.out.println(Arrays.toString(predictList.toArray()));
-//			//System.out.println(testFold);
-//			isTheSame = 0;
-//			for(int j=0; j<testFoldSize; j++){
-//				if(checkSame(predictList.get(j), testFold.get(j).classValue())){
-//					isTheSame++;
-//				}
-//			}
-//			accuracyPerFold[i] = (double)isTheSame/(double)testFoldSize;
-//		}
-//		// Claire changes
-//		//System.out.println(Arrays.toString(accuracyPerFold));
-//		
-//		for(int i=0; i<k; i++){
-//			accuracy += accuracyPerFold[i];
-//		}
-//		accuracy = accuracy/k;
-//		return accuracy;
-//	}
-	
 	public double doCrossValidation(Instances dataSet, DecisionTree dt) throws Exception{
 		double accuracy = 0.0;
 		double[] accuracyPerFold = new double[k];
 		int testFoldSize = 0;		
-		
-		// change to k!
+
 		for(int i=0; i<k; i++){
 			dt.buildClassifier(this.getTrainingData(i));
 			Instances testFold = bigArrayList.get(i);
