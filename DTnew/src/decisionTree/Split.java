@@ -1,15 +1,20 @@
 package decisionTree;
 
+/*
+ * Team13 Prodigy
+ * This is the split model of each tree node
+ * It decides which attribute to split, the split point and the information gain it gets
+ * from the split
+ */
+
 import weka.core.Instance;
 import weka.core.Instances;
 
-//
 public class Split {
 	int attIndex;
 	int minObj;
 	int numSplits;
 	double splitPoint;
-	double gainRatio;
 	double infoGain;
 	double[] splitedbranches;
 	boolean valid = true;
@@ -160,10 +165,6 @@ public class Split {
 		r -= getLog(numOfInstances);
 		
 		return -r;
-	}
-	
-	public double getGainRatio() {
-		return this.gainRatio;
 	}
 	
 	public double getInfoGain() {

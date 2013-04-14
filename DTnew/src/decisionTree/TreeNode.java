@@ -1,5 +1,11 @@
 package decisionTree;
 
+/*
+ * Team13 Prodigy
+ * Tree node is the tree data structure for the decision tree
+ * It is either a leaf with no children or a tree with several branches
+ */
+
 import weka.core.Instance;
 import weka.core.Instances;
 

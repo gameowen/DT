@@ -1,4 +1,11 @@
 package decisionTree;
+
+/*
+ * Team13 Prodigy
+ * This is a simple test class that builds the decision tree, print the tree and the accuracy,
+ * and print out the predicted results of the given test set.
+ */
+
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils.DataSource;
 

@@ -1,5 +1,10 @@
 package decisionTree;
 
+/*
+ * Team13 Prodigy
+ * This is the class used to test numeric split
+ */
+
 import weka.core.Instance;
 import weka.core.Instances;
 

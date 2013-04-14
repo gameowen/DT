@@ -1,5 +1,10 @@
 package decisionTree;
 
+/*
+ * Team13 Prodigy
+ * DecisionTree class is a simple classifier that implements decision tree algorithm
+ */
+
 import weka.core.Attribute;
 import weka.core.Instance;
 import weka.core.Instances;
@@ -14,6 +19,7 @@ public class DecisionTree {
 		this.minObj = minObj;
 	}
 	
+	// Build the classifier based on a given set of training set
 	public void buildClassifier(Instances data) {
 		if (data.numInstances() < 2 * minObj) {
 			throw new RuntimeException("Too few instances!");
@@ -33,6 +39,7 @@ public class DecisionTree {
 		_printTree(data, root, 0);
 	}
 	
+	// Return the index of the class value given a test instance 
 	public double classifyInstance(Instance instance) {
 		return root.classifyInstance(instance);				
 	}
